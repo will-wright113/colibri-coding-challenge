@@ -49,11 +49,11 @@ The source CSV data is loaded into a landing folder.
 
 `cleansed/turbine_power_autoloader`
 
-The first step in the cleansed layer loads the raw CSV data into a streaming table using [Auto Loader](https://learn.microsoft.com/en-us/azure/databricks/ingestion/auto-loader/). This keeps track of files that have been processed so that records are processed exaclty once. A schema hint has been provided to imporve the schema inference on such a small dataset. Allow overwrites has been enabled so that when an existing file has been updated it can subsequently be processed (see [Further Improvements](#further-improvements) for a better ingestion process). Finally, some meta data columns are added to the dataset: file name and file modification time.
+Initially within the cleansed layer, the pipeline loads the raw CSV data into a streaming table using [Auto Loader](https://learn.microsoft.com/en-us/azure/databricks/ingestion/auto-loader/). This keeps track of files that have been received so that records are processed exaclty once. A schema hint has been provided to imporve the schema inference on such a small dataset. Also Auto Loader has been configured to allow overwrites so that when an existing file has been updated it can subsequently be processed (see [Further Improvements](#further-improvements) for a better ingestion process). Finally, some meta data columns are added to the dataset: file name and file modification time.
 
 `cleansed/turbine_power`
 
-The second step in the cleansed layer is to perform [change data capture](https://learn.microsoft.com/en-us/azure/databricks/delta-live-tables/cdc) on the autoloader streaming table. This will ensure that updates to existing records or any late arriving data is processed correctly (e.g. bad/late data due to sensor malfunction). Some boolean conditions using [expectations](https://learn.microsoft.com/en-us/azure/databricks/delta-live-tables/expectations) are also defined to capture data quality.
+The second step in the cleansed layer performs [change data capture](https://learn.microsoft.com/en-us/azure/databricks/delta-live-tables/cdc) on the autoloader streaming table. This will ensure that updates to existing records or any late arriving data is processed correctly (e.g. bad/late data due to sensor malfunction). Some boolean conditions using [expectations](https://learn.microsoft.com/en-us/azure/databricks/delta-live-tables/expectations) are also defined to capture data quality.
 
 **Enriched Layer**
 
@@ -61,7 +61,7 @@ The second step in the cleansed layer is to perform [change data capture](https:
 
 `enriched/turbine_power_anomalies`
 
-Within the enriched layer anomalies are calculated and flagged using the provided logic and then gathered in a separate table for further investigation. Any dependent aggregation tables can filter out these anomalies by using the flag.
+Within the enriched layer, anomalies are calculated and flagged using the provided logic creating an augmented dataset. A separate table then gathers anomalous data for further investigation. Any dependent aggregation tables can filter out these anomalies by reading from the augmented dataset and using the flag.
 
 **Curated Layer**
 
@@ -80,6 +80,8 @@ The pipeline was tested by using the existing datasets as expected data and crea
 The `anomalous_data.csv` dataset contains two records that are considerably higher or lower than the average power output. This dataset is used to test the anomaly logic.
 
 The `bad_data.csv` dataset contains malformed data - wrong typed data or empty fields for each column. The record count assertions validate that these records are dropped in the cleansed layer.
+
+The current test cases are simplistic and can be expanded on.
 
 ### Further Improvements
 
