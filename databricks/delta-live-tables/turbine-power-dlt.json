@@ -1,0 +1,30 @@
+{
+    "id": "c6c9b801-c82f-4ce4-a3d9-23d5eed3e2f5",
+    "pipeline_type": "WORKSPACE",
+    "clusters": [
+        {
+            "label": "default",
+            "spark_conf": {
+                "spark.hadoop.fs.azure.account.key.colibritaskstadls.dfs.core.windows.net": "{{secrets/secret-scope/colibritaskstadls-key}}"
+            },
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 1
+        }
+    ],
+    "development": true,
+    "continuous": false,
+    "channel": "CURRENT",
+    "photon": false,
+    "libraries": [
+        {
+            "notebook": {
+                "path": "/Users/william.wright113@gmail.com/turbine-power-dlt"
+            }
+        }
+    ],
+    "name": "turbine-power-dlt",
+    "edition": "ADVANCED",
+    "storage": "abfss://test@colibritaskstadls.dfs.core.windows.net/cleansed/_meta",
+    "target": "turbine_power",
+    "data_sampling": false
+}
